@@ -4,8 +4,10 @@ CLOTH-OD/
 VOC2007/
 
 # Model Weights
+pretrained_weights/
 save_weights/
 **/*.pth
+**/*.tar.gz
 
 # Predictions and Outputs
 outputs/ 
