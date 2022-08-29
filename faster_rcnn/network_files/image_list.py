@@ -1,0 +1,26 @@
+from typing import List, Tuple
+from torch import Tensor
+
+
+class ImageList(object):
+    """
+    Structure that holds List[images] (of possibly varying sizes) as a single tensor.
+    This works by padding the images to the same size,
+    and storing in a field the original sizes of each image
+    """
+
+    def __init__(self, tensors, image_sizes):
+        # type: (Tensor, List[Tuple[int, int]]) -> None
+        """
+        Args:
+            tensors: 4-D tensors (tensor), [B, C, H, W], batched images
+            image_sizes: (List[Tuple[int, int]]), images' size before padding
+        """
+        self.tensors = tensors
+        self.image_sizes = image_sizes
+
+    def to(self, device):
+        # type: (Device) -> ImageList # noqa
+        cast_tensor = self.tensors.to(device)
+        return ImageList(cast_tensor, self.image_sizes)
+
