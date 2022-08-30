@@ -5,10 +5,10 @@ import random
 def main():
     random.seed(0)  # pseudo-random seed for productivity
 
-    files_path = "../VOC2007/VOC2007-trainval/JPEGImages"  # set path to `JEPGImage` OR `Annotations`
+    files_path = "../../CLOTH-OD/VOC2007-trainval/JPEGImages"  # set path to `JEPGImage` OR `Annotations`
     assert os.path.exists(files_path), "path: '{}' does not exist.".format(files_path)
 
-    val_rate = 0.5  # validation data/total data
+    val_rate = 0.3  # validation data/total data
 
     files_name = sorted([file.split(".")[0] for file in os.listdir(files_path)])
     files_num = len(files_name)
