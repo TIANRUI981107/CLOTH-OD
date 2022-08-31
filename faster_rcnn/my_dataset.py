@@ -25,7 +25,7 @@ class VOCDataSet(Dataset):
         assert year in ["2007", "2012"], "year must be in ['2007', '2012']"
         if "VOC2007" in voc_root:
             self.root = os.path.join(voc_root, f"VOC{year}-trainval")  # PASCAL VOC datasets
-        elif "CLOTH" in voc_root:
+        elif "CLOTH-OD" in voc_root:
             self.root = os.path.join(voc_root, "VOC2007-trainval")  # CLOTH datasets
         else:
             self.root = os.path.join(voc_root, "VOCdevkit", f"VOC{year}")  # raw PASCAL VOC datasets
@@ -62,7 +62,7 @@ class VOCDataSet(Dataset):
 
             objects_list.extend(obj_cls_per_img)  # concatenate all the obj_per_img
             obj_uniq_cls = sorted(list(set(objects_list)))  # uniq(objects), sorted in alphabetic order
-            self.xml_list.append(xml_path)
+            self.xml_list.append(xml_path)  # store XML list that are neither empty nor no-objects
 
         assert len(self.xml_list) > 0, "in '{}' file does not find any information.".format(txt_path)
 
