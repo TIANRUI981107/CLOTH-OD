@@ -52,10 +52,10 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print("Using {} device training.".format(device.type))
 
-    # 用来保存coco_info的文件
+    # save coco_info
     results_file = "results{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
-    # 检查保存权重文件夹是否存在，不存在则创建
+    # create ./save_weights dir if not exist
     if not os.path.exists("save_weights"):
         os.makedirs("save_weights")
 
@@ -67,11 +67,11 @@ def main():
     }
 
     # datasets root
-    VOC_root = os.path.join(os.getcwd(), '..', 'CLOTH')  # datasets root
+    VOC_root = os.path.join(os.getcwd(), '..', '..', 'CLOTH-OD')  # datasets root
     # VOC_root = os.path.join(os.getcwd(), '..', 'VOC2007')  # datasets root
 
     aspect_ratio_group_factor = 3
-    batch_size = 2
+    batch_size = 8
     amp = False  # 是否使用混合精度训练，需要GPU支持
 
     # check voc root
@@ -120,8 +120,8 @@ def main():
                                                   num_workers=nw,
                                                   collate_fn=val_dataset.collate_fn)
 
-    # ---> create model, num_classes == background + obj_classes <---
-    model = create_model(num_classes=21)
+    # ---> create model, num_classes = background + obj_classes <---
+    model = create_model(num_classes=34)
     # print(model)
     model.to(device)
 
