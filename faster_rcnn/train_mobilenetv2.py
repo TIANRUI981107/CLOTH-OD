@@ -67,7 +67,7 @@ def main():
     }
 
     # datasets root
-    VOC_root = os.path.join(os.getcwd(), '..', '..', 'VOC2007')  # datasets root
+    VOC_root = os.path.join(os.getcwd(), '..', '..', 'CLOTH-OD')  # datasets root
     # VOC_root = os.path.join(os.getcwd(), '..', 'VOC2007')  # datasets root
 
     aspect_ratio_group_factor = 3
@@ -120,8 +120,8 @@ def main():
                                                   num_workers=nw,
                                                   collate_fn=val_dataset.collate_fn)
 
-    # ---> create model, num_classes == background + obj_classes <---
-    model = create_model(num_classes=21)
+    # ---> create model, num_classes = background + obj_classes <---
+    model = create_model(num_classes=34)
     # print(model)
     model.to(device)
 
