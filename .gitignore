@@ -1,6 +1,7 @@
 # --> User Define <--
 # Datasets and Images
 CLOTH-OD/
+CLOTH-mini/ 
 VOC2007/
 
 # Model Weights
@@ -17,6 +18,7 @@ outputs/
 
 
 # --> VSCODE-PYTHON <--
+.vscode/
 .DS_Store
 .huskyrc.json
 out
