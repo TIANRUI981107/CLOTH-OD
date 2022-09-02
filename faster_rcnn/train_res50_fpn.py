@@ -1,8 +1,6 @@
 import os
 import datetime
-
 import torch
-
 import transforms
 from network_files import FasterRCNN, FastRCNNPredictor
 from backbone import resnet50_fpn_backbone
@@ -47,21 +45,20 @@ def main(args):
     device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     print("Using {} device training.".format(device.type))
 
-    # 用来保存coco_info的文件
+    # save coco-metrices file
     results_file = "results{}.txt".format(datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     # ---> datasets preprocessing <---
     data_transform = {
-        "train": transforms.Compose([transforms.ToTensor(),
-                                     transforms.RandomHorizontalFlip(0.5)]),
+        "train": transforms.Compose([transforms.ToTensor(), transforms.RandomHorizontalFlip(0.5)]),
         "val": transforms.Compose([transforms.ToTensor()])
     }
 
     # specify datasets root
-    VOC_root = os.path.join(args.data_path, "..", "VOC2007")
+    VOC_root = os.path.join(args.data_path, '..', '..', 'VOC2007')
     # check voc root
     if os.path.exists(os.path.join(VOC_root, "VOC2007-trainval")) is False:
-        raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
+        raise FileNotFoundError("Datasets doesn't exist in path:'{}'.".format(VOC_root))
 
     # ---> load train data set <---
     train_dataset = VOCDataSet(VOC_root, "2007", data_transform["train"], "train.txt")
@@ -104,7 +101,7 @@ def main(args):
                                                       num_workers=nw,
                                                       collate_fn=val_dataset.collate_fn)
 
-    # ---> create model, num_classes equal background + 20 classes <---
+    # ---> create model, num_classes == background + object-classes <---
     model = create_model(num_classes=args.num_classes + 1)
     # print(model)
     model.to(device)
@@ -214,7 +211,7 @@ if __name__ == "__main__":
                         metavar='W', help='weight decay (default: 1e-4)',
                         dest='weight_decay')
     # 训练的batch size
-    parser.add_argument('--batch_size', default=2, type=int, metavar='N',
+    parser.add_argument('--batch_size', default=8, type=int, metavar='N',
                         help='batch size when training.')
     parser.add_argument('--aspect-ratio-group-factor', default=3, type=int)
     # 是否使用混合精度训练(需要GPU支持混合精度)
