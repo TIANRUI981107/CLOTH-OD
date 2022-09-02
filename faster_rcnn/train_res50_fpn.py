@@ -55,7 +55,7 @@ def main(args):
     }
 
     # specify datasets root
-    VOC_root = os.path.join(args.data_path, '..', '..', 'CLOTH-OD')
+    VOC_root = os.path.join(args.data_path, '..', '..', 'VOC2007')
     # check voc root
     if os.path.exists(os.path.join(VOC_root, "VOC2007-trainval")) is False:
         raise FileNotFoundError("Datasets doesn't exist in path:'{}'.".format(VOC_root))
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     # 训练数据集的根目录(VOCdevkit)
     parser.add_argument('--data-path', default='./', help='dataset')
     # 检测目标类别数(不包含背景)
-    parser.add_argument('--num-classes', default=33, type=int, help='num_classes')
+    parser.add_argument('--num-classes', default=20, type=int, help='num_classes')
     # 文件保存地址
     parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
     # 若需要接着上次训练，则指定上次训练保存权重文件地址
