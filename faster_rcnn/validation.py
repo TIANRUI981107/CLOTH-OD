@@ -1,10 +1,14 @@
 """
-该脚本用于调用训练好的模型权重去计算验证集/测试集的COCO指标
-以及每个类别的mAP(IoU=0.5)
+Load saved models to evaluate val/test datasets.
+
+Return saved TXT file:
+- MS-COCO metries
+- mAP(IoU=0.5) for each object class
 """
 
 import os
 import json
+from pathlib import Path
 
 import torch
 from tqdm import tqdm
@@ -98,17 +102,17 @@ def main(parser_data):
     }
 
     # read class_indict
-    label_json_path = './pascal_voc_classes.json'
+    VOC_root = Path(parser_data.data_path).absolute()
+    label_json_path = Path.joinpath(VOC_root, "VOC2007-trainval", "cls_indices.json")
     assert os.path.exists(label_json_path), "json file {} dose not exist.".format(label_json_path)
     with open(label_json_path, 'r') as f:
         class_dict = json.load(f)
 
     category_index = {v: k for k, v in class_dict.items()}
 
-    VOC_root = parser_data.data_path
     # check voc root
-    if os.path.exists(os.path.join(VOC_root, "VOCdevkit")) is False:
-        raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
+    if os.path.exists(os.path.join(VOC_root, "VOC2007-trainval")) is False:
+        raise FileNotFoundError("VOC2007-trainval dose not in path:'{}'.".format(VOC_root))
 
     # 注意这里的collate_fn是自定义的，因为读取的数据包括image和targets，不能直接使用默认的方法合成batch
     batch_size = parser_data.batch_size
@@ -116,9 +120,9 @@ def main(parser_data):
     print('Using %g dataloader workers' % nw)
 
     # load validation data set
-    val_dataset = VOCDataSet(VOC_root, "2012", data_transform["val"], "val.txt")
+    val_dataset = VOCDataSet(str(VOC_root), "2007", data_transform["val"], "val.txt")
     val_dataset_loader = torch.utils.data.DataLoader(val_dataset,
-                                                     batch_size=1,
+                                                     batch_size=batch_size,
                                                      shuffle=False,
                                                      num_workers=nw,
                                                      pin_memory=True,
@@ -130,7 +134,7 @@ def main(parser_data):
     model = FasterRCNN(backbone=backbone, num_classes=parser_data.num_classes + 1)
 
     # 载入你自己训练好的模型权重
-    weights_path = parser_data.weights_path
+    weights_path = Path(parser_data.weights_path).absolute()
     assert os.path.exists(weights_path), "not found {} file.".format(weights_path)
     model.load_state_dict(torch.load(weights_path, map_location='cpu')['model'])
     # print(model)
@@ -192,16 +196,17 @@ if __name__ == "__main__":
         description=__doc__)
 
     # 使用设备类型
-    parser.add_argument('--device', default='cuda', help='device')
+    parser.add_argument('--device', default='cuda:0', help='device')
 
     # 检测目标类别数
-    parser.add_argument('--num-classes', type=int, default='20', help='number of classes')
+    parser.add_argument('--num-classes', type=int, default='33', help='number of classes excluding background')
 
     # 数据集的根目录(VOCdevkit)
-    parser.add_argument('--data-path', default='/data/', help='dataset root')
+    parser.add_argument('--data-path', default='../../CLOTH-OD/', help='dataset root')
 
     # 训练好的权重文件
-    parser.add_argument('--weights-path', default='./save_weights/model.pth', type=str, help='training weights')
+    parser.add_argument('--weights-path', default='./outputs/CLOTH-OD-0831-01/save_weights/resNetFpn-model-13.pth',
+     type=str, help='training weights')
 
     # batch size
     parser.add_argument('--batch_size', default=1, type=int, metavar='N',
