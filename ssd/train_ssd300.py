@@ -1,3 +1,17 @@
+"""
+Train SSD model with CLOTH-OD dataset.
+
+Notes:
+    Training your own datasets using this codebase should change:
+    - args.data_path [str]: `path/to/datasets`
+    - num_classes [int]: `object classes + background`
+    - cls_indices.json [str]: `path/to/cls_indices.json`
+    - train.txt [str]: prepare `ImageSets/Main/train.txt` file 
+    - val.txt [str]: prepare `ImageSets/Main/val.txt` file
+
+    Pretrained models should be download:
+    - SSD pretrained models: download and saved in `./src/nvidia_ssdpyt_fp32.pt`
+"""
 import os
 import datetime
 
@@ -63,11 +77,11 @@ def main(parser_data):
 
     VOC_root = parser_data.data_path
     # check voc root
-    if os.path.exists(os.path.join(VOC_root, "VOCdevkit")) is False:
-        raise FileNotFoundError("VOCdevkit dose not in path:'{}'.".format(VOC_root))
+    if os.path.exists(os.path.join(VOC_root, "VOC2007-trainval")) is False:
+        raise FileNotFoundError("Dataset dose not in path:'{}'.".format(VOC_root))
 
     # VOCdevkit -> VOC2012 -> ImageSets -> Main -> train.txt
-    train_dataset = VOCDataSet(VOC_root, "2012", data_transform['train'], train_set='train.txt')
+    train_dataset = VOCDataSet(VOC_root, "2007", data_transform['train'], train_set='train.txt')
     # 注意训练时，batch_size必须大于1
     batch_size = parser_data.batch_size
     assert batch_size > 1, "batch size must be greater than 1"
@@ -83,7 +97,7 @@ def main(parser_data):
                                                     drop_last=drop_last)
 
     # VOCdevkit -> VOC2012 -> ImageSets -> Main -> val.txt
-    val_dataset = VOCDataSet(VOC_root, "2012", data_transform['val'], train_set='val.txt')
+    val_dataset = VOCDataSet(VOC_root, "2007", data_transform['val'], train_set='val.txt')
     val_data_loader = torch.utils.data.DataLoader(val_dataset,
                                                   batch_size=batch_size,
                                                   shuffle=False,
@@ -170,11 +184,11 @@ if __name__ == '__main__':
         description=__doc__)
 
     # 训练设备类型
-    parser.add_argument('--device', default='cuda:0', help='device')
+    parser.add_argument('--device', default='cuda:1', help='device')
     # 检测的目标类别个数，不包括背景
-    parser.add_argument('--num_classes', default=20, type=int, help='num_classes')
+    parser.add_argument('--num_classes', default=33, type=int, help='num_classes')
     # 训练数据集的根目录(VOCdevkit)
-    parser.add_argument('--data-path', default='./', help='dataset')
+    parser.add_argument('--data-path', default='../../CLOTH-OD', help='dataset')
     # 文件保存地址
     parser.add_argument('--output-dir', default='./save_weights', help='path where to save')
     # 若需要接着上次训练，则指定上次训练保存权重文件地址
@@ -182,10 +196,10 @@ if __name__ == '__main__':
     # 指定接着从哪个epoch数开始训练
     parser.add_argument('--start_epoch', default=0, type=int, help='start epoch')
     # 训练的总epoch数
-    parser.add_argument('--epochs', default=15, type=int, metavar='N',
+    parser.add_argument('--epochs', default=30, type=int, metavar='N',
                         help='number of total epochs to run')
     # 训练的batch size
-    parser.add_argument('--batch_size', default=4, type=int, metavar='N',
+    parser.add_argument('--batch_size', default=8, type=int, metavar='N',
                         help='batch size when training.')
 
     args = parser.parse_args()
