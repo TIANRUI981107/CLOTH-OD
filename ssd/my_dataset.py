@@ -7,15 +7,26 @@ from lxml import etree
 
 
 class VOCDataSet(Dataset):
-    """读取解析PASCAL VOC2007/2012数据集"""
+    """Parsing PASCAL VOC2007/2012 datasets"""
 
     def __init__(self, voc_root, year="2012", transforms=None, train_set='train.txt'):
+        """
+        Args:
+            voc_root: root to VOC datasets, e.g. "VOC2007"
+            year: specific for VOC datasets, e.g. "2007", "2012"
+            transforms: pre-processing method for datasets
+            txt_name: initialized datasets, e.g. "train.txt", "val.txt"
+            provided_cls_path: whether the `cls_indices` is provided under datasets root dir, e.g.
+                at "VOC2007/VOC2007-trainval/cls_indices.json"
+        """
+        # whether datasets exist, then get `Path to JPEGImages` and `Path to Annotations`
         assert year in ["2007", "2012"], "year must be in ['2007', '2012']"
-        # 增加容错能力
-        if "VOCdevkit" in voc_root:
-            self.root = os.path.join(voc_root, f"VOC{year}")
+        if "VOC2007" in voc_root:
+            self.root = os.path.join(voc_root, f"VOC{year}-trainval")  # PASCAL VOC datasets
+        elif "CLOTH-OD" in voc_root:
+            self.root = os.path.join(voc_root, "VOC2007-trainval")  # CLOTH datasets
         else:
-            self.root = os.path.join(voc_root, "VOCdevkit", f"VOC{year}")
+            self.root = os.path.join(voc_root, "VOCdevkit", f"VOC{year}")  # raw PASCAL VOC datasets
         self.img_root = os.path.join(self.root, "JPEGImages")
         self.annotations_root = os.path.join(self.root, "Annotations")
 
@@ -26,7 +37,7 @@ class VOCDataSet(Dataset):
                              for line in read.readlines() if len(line.strip()) > 0]
 
         # read class_indict
-        json_file = "./pascal_voc_classes.json"
+        json_file = os.path.join(self.root, "./cls_indices.json")
         assert os.path.exists(json_file), "{} file not exist.".format(json_file)
         with open(json_file, 'r') as f:
             self.class_dict = json.load(f)

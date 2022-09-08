@@ -9,6 +9,7 @@ pretrained_weights/
 save_weights/
 **/*.pth
 **/*.tar.gz
+**/*.pt
 
 # Predictions and Outputs
 outputs/ 
