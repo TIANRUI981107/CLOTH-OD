@@ -307,7 +307,7 @@ def build_targets(p, targets, model):
         # Append
         # gain[3]: grid_h, gain[2]: grid_w
         # image_idx, anchor_idx, grid indices(y, x)
-        indices.append((b, a, gj.clamp_(0, gain[3]-1), gi.clamp_(0, gain[2]-1)))
+        indices.append((b, a, gj.clamp_(0, (gain[3]-1).to(torch.long)), gi.clamp_(0, (gain[2]-1).to(torch.long))))
         tbox.append(torch.cat((gxy - gij, gwh), 1))  # gt box相对anchor的x,y偏移量以及w,h
         anch.append(anchors[a])  # anchors
         tcls.append(c)  # class
