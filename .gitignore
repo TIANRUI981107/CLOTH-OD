@@ -13,10 +13,13 @@ save_weights/
 
 # Predictions and Outputs
 outputs/ 
+runs/
 
 # Swap Files
 **/*.swp
 
+# YOLO specific
+my_yolo_dataset/
 
 # --> VSCODE-PYTHON <--
 .vscode/
