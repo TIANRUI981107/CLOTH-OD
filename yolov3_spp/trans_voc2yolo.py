@@ -11,8 +11,8 @@ import shutil
 
 
 # voc数据集根目录以及版本
-voc_root = "/data/VOCdevkit"
-voc_version = "VOC2012"
+voc_root = "../../CLOTH-OD"
+voc_version = "VOC2007-trainval"
 
 # 转换的训练集以及验证集对应txt文件
 train_txt = "train.txt"
@@ -22,7 +22,7 @@ val_txt = "val.txt"
 save_file_root = "./my_yolo_dataset"
 
 # label标签对应json文件
-label_json_path = './data/pascal_voc_classes.json'
+label_json_path = './data/cls_indices.json'
 
 # 拼接出voc的images目录，xml目录，txt目录
 voc_images_path = os.path.join(voc_root, voc_version, "JPEGImages")
